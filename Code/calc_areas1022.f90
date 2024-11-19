@@ -1,0 +1,113 @@
+      
+      subroutine calc_areas(g)
+
+!     Calculate the area of the quadrilateral cells and the lengths of the side
+!     facets
+
+!     Explicitly declare the required variables
+      use types
+      use routines
+      implicit none
+      type(t_grid), intent(inout) :: g
+      integer :: ni, nj
+
+!     Declare integers or any extra variables you need here
+!     INSERT
+!     *********************
+      real :: ai,aj,bi,bj
+!     [ai,aj] and [bi,bj] are the two diagnal vectors for each cell
+      real :: Lx_i, Ly_i, Lx_j, Ly_j
+!     (projected length for the facet) 
+      integer :: i,j
+!     ********************* 
+!     Get the size of the mesh and store locally for convenience
+      ni = g%ni; nj = g%nj;
+
+!     Calculate the areas of the cells and store in g%area. The area of any
+!     quadrilateral is half of the magnitude of the cross product of the two
+!     vectors that form the diagonals. Check the order of your product so that
+!     the values come out positive! You can do this using two nested loops in
+!     the i and j-directions or in a vectorised way by indexing the coordinate
+!     arrays with lists of indices
+!     INSERT
+!     *********************** 
+      do i=1, ni-1
+         do j=1, nj-1
+            ai = g%x(i,j)-g%x(i+1,j+1)
+            aj = g%y(i,j)-g%y(i+1,j+1)
+            bi = g%x(i,j+1)-g%x(i+1,j)
+            bj = g%y(i,j+1)-g%y(i+1,j)
+            g%area(i,j)= bi*aj - ai*bj
+          enddo
+       enddo
+
+       write(6,*)
+       write(6,*) 'Area calculation checking:'
+       write(6,*) g%area(1,1),g%area(1,2),'...', g%area(1,nj-1)
+       write(6,*) g%area(2,1),g%area(2,2)
+       write(6,*) '..................................', g%area(ni-1,nj-1)
+       write(6,*)
+!      ***********************      
+!      Calculate the projected lengths in the x and y-directions on all of the
+!      "i = const" facets and store them in g%lx_i and g%ly_i. When combined
+!      together these two components define a vector that is normal to the facet,
+!      pointing inwards towards the centre of the cell. This is only the case for
+!      the left hand side of the cell, the vector stored in position i,j points
+!      towards the centre of the i,j cell
+!      INSERT
+!      ***********************
+       do i=1, ni-1
+          do j=1, nj-1
+             Lx_i = g%x(i+1,j) - g%x(i,j)
+             Ly_i = g%y(i+1,j) - g%y(i,j)
+             g%lx_i(i,j) = -Lx_i
+             g%ly_i(i,j) = Ly_i
+          enddo
+       enddo
+
+       write(6,*) 'i=const. Project Length checking at (1,1):'
+       write(6,*) 'lx_i = ', g%lx_i(1,1)
+       write(6,*) 'ly_i = ', g%ly_i(1,1)
+       write(6,*) '(i,j) Coord', '(', g%x(1,1),',',g%y(1,1),')' 
+       write(6,*) 'Centre Coord', '(', (g%x(1,1)+g%x(2,2))/2,',',(g%y(1,1)+g%y(2,2))/2,')'
+       write(6,*) 'del_j = ', (g%y(1,1)+g%y(2,2))/2 - g%y(1,1)
+       write(6,*)
+!     ***********************      
+!     Now repeat the calculation for the projeted lengths on the "j=const"
+!     facets. 
+!     INSERT
+!     ***********************
+       do i=1, ni-1
+          do j=1, nj-1
+             Lx_j = g%x(i,j+1) - g%x(i,j)
+             Ly_j = g%y(i,j+1) - g%y(i,j)
+             g%lx_j(i,j) = -Lx_j
+             g%ly_j(i,j) = Ly_j
+          enddo
+       enddo
+
+       write(6,*) 'j=const. Project Length checking at (1,1):'
+       write(6,*) 'lx_j = ', g%lx_j(1,1)
+       write(6,*) 'ly_j = ', g%ly_j(1,1)
+       write(6,*) '(i,j) Coord', '(', g%x(1,1),',',g%y(1,1),')' 
+       write(6,*) 'Centre Coord', '(', (g%x(1,1)+g%x(2,2))/2,',',(g%y(1,1)+g%y(2,2))/2,')'
+       write(6,*) 'del_i = ', (g%x(1,1)+g%x(2,2))/2 - g%x(1,1) 
+       write(6,*)
+!     ***********************
+!     Find the minimum length scale in the mesh, this is defined as the length
+!     of the shortest side of all the cells. Call this length "l_min", it is used
+!     to set the timestep from the CFL number. Start by calculating the lengths
+!     of the i and j facets by using the intrinsic function "hypot", this avoids
+!     underflow and overflow errors. Then find the overal minimum value using
+!     both the "min" and "minval" functions.
+!     INSERT
+!     ***********************
+
+!     ***********************      
+!
+!     Print the overall minimum length size that has been calculated
+      write(6,*) 'Calculated cell areas and facet lengths'
+      write(6,*) '  Overall minimum element size = ', g%l_min
+      write(6,*)
+
+      end subroutine calc_areas

@@ -1,0 +1,57 @@
+      
+      subroutine set_secondary(av,g)
+
+!     This subroutine calculates the secondary flow variables from the primary
+!     ones at every node
+
+!     Explicitly declare the required variables
+      use types
+      implicit none
+      type(t_appvars), intent(in) :: av
+      type(t_grid), intent(inout) :: g
+
+!     Define any further variables you may need
+!     INSERT
+!     ***************
+!      real :: ro(g%ni,g%nj), roe(g%ni,g%nj), rovx(g%ni,g%nj), rovy(g%ni,g%nj)
+!      real :: lx_i(g%ni,g%nj), ly_i(g%ni,nj), lx_j(g%ni,g%nj), ly_j(g%ni,g%nj)
+!      ro(i,j) = g%ro(i,j); roe = g%roe; rovx = g%rovx; rovy = g%rovy
+!      lx_i = g%lx_i ; ly_i = g%ly_i
+!      lx_j = g%lx_j ; ly_j = g%ly_j
+
+      real :: p_dyn(g%ni, g%nj), m_i(g%ni,g%nj), vy(g%ni,g%nj)
+      integer :: i, j, ni, nj
+      real, dimension(g%ni, g%nj) :: v2, t
+
+      ni = g%ni; nj = g%nj
+      
+!     ***************      
+!     The primary flow variables are "ro", "roe", "rovx" and "rovy", these are 
+!     the conserved quantities within the Euler equations. Write the code to
+!     calculate the secondary flow variables which are the velocity components
+!     "vx" and "vy", the static pressure "p" and the stagnation enthalpy
+!     "hstag". These are needed at every timestep, there is no need for any 
+!     loops as the operations can be performed elementwise, although you may
+!     wish to define some intermediate variables to improve readability.
+!     INSERT
+
+
+!     ***************
+
+      g%vx = g%rovx / g%ro
+      g%vy = g%rovy / g%ro
+      v2 = g%vx * g%vx + g%vy * g%vy
+            !p_dyn(i,j) = 0.5*g%ro(i,j)*((g%vx(i,j)**2)+(g%vy(i,j)**2))
+      t = (g%roe/g%ro -0.5*v2)/av%cv
+            !g%p(i,j) = (av%gam -1)*(g%roe(i,j) - p_dyn(i,j))
+            !g%hstag(i,j) = (g%roe(i,j)+ g%p(i,j))/g%ro(i,j)
+      g%hstag = av%cp * t + 0.5 *v2
+      g%p = g%ro * av%rgas *t
+
+
+!      write(6,*) "1,1", g%vx(1,1),g%p(1,1), g%hstag(1,1)
+!      write(6,*) "40,18", g%vx(40,18), g%p(40,18), g%hstag(40,18)
+!     ****************      
+      end subroutine set_secondary
+
+
