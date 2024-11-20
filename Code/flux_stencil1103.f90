@@ -31,48 +31,14 @@
 !     over the timestep "dt", save it in the array "dcell"
 !     INSERT
 !     ********************
-!      do i=1, ni-1
-!         do j=1, nj-1
-!            dcell(i,j) = (flux_i(i,j) - flux_i(i+1,j) + flux_j(i,j) - flux_j(i,j+1))*av%dt/area(i,j)
-!            // spatial derivative terms in Euler equation, using divergence, not time evolution            
-!            print *, i, j, dcell(i,j)
-!         enddo
-!      enddo
-
       dcell(1:ni-1, 1:nj-1) = (flux_i(1:ni-1,1:nj-1) - flux_i(2:ni,1:nj-1) + &
-           flux_j(1:ni-1,1:nj-1) - flux_j(1:ni-1,2:nj))*av%dt/area(1:ni-1,1:nj-1)
-      
-!     Top and bottom edges (j = 1&nj)
-!      do i = 2, ni-1
-!         dcell(i,1)  = dcell(i,2)   
-!         dcell(i,nj) = dcell(i,nj-1) 
-!      end do
-      
-!     Left and right edges (i = 1&ni)
-!      do j = 2, nj-1
-!         dcell(1,j)  = dcell(2,j)   
-!         dcell(ni,j) = dcell(ni-1,j) 
-!      end do
-
-!     Corner cells
-!      dcell(1,1)   = dcell(2,2)
-!      dcell(1,nj)  = dcell(2,nj-1)
-!      dcell(ni,1)  = dcell(ni-1,2)
-!      dcell(ni,nj) = dcell(ni-1,nj-1)
-
-!     [Used the neighbour values to boost the code efficiency without affect too much accuracy]     
+           flux_j(1:ni-1,1:nj-1) - flux_j(1:ni-1,2:nj))*av%dt/area(1:ni-1,1:nj-1)  
 !     ********************      
 !     Now distribute the changes equally to the four corners of each cell. Each 
 !     interior grid point receives one quarter of the change from each of the 
 !     four cells adjacent to it.
 !     INSERT
 !     **********************
-!      do i=2, ni-1
-!         do j=2, nj-1
-!            dnode(i,j) = 0.25 * (dcell(i,j) + dcell(i-1,j) + dcell(i,j-1) + dcell(i-1,j-1))
-!         enddo
-!      enddo
-
       dnode(2:ni-1,2:nj-1) = 0.25 * (dcell(2:ni-1,2:nj-1) + dcell(1:ni-2, 2:nj-1) +&
            dcell(2:ni-1, 1:nj-2) + dcell(1:ni-2, 1:nj-2))
 !     ********************** 
