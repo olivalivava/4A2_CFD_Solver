@@ -40,7 +40,7 @@
 !     *************************
 !      call sum_fluxes(av,mass_i,mass_j,g%area, g%ro, g%dro)
       call sum_fluxes(av,mass_i,mass_j,g%area, g%ro, g%dro)
-      g%ro = g%ro_start + g%dro
+      g%ro(1:ni-1, 1:nj-1) = g%ro_start(1:ni-1, 1:nj-1) + g%dro(:,:)*(av%dt/av%dt_total)
 !     *************************      
 !     Setup the conservation of energy equation by calculated the enthalpy flux
 !     and storing the values in "flux_i" and "flux_j", you will need "mass_i"
@@ -54,7 +54,7 @@
 !     INSERT
 !     **************************
       call sum_fluxes(av,flux_i,flux_j,g%area,g%roe, g%droe)
-      g%roe = g%roe_start + g%droe
+      g%roe(1:ni-1, 1:nj-1) = g%roe_start(1:ni-1, 1:nj-1) + g%droe(:,:)*(av%dt/av%dt_total)
 !     **************************      
 !     Setup the x-momentum equation including momentum flux and pressure forces
 !     INSERT
@@ -66,7 +66,7 @@
 !     INSERT
 !     *************************
       call sum_fluxes(av,flux_i,flux_j,g%area,g%rovx, g%drovx)
-      g%rovx = g%rovx_start + g%drovx
+      g%rovx(1:ni-1, 1:nj-1) = g%rovx_start(1:ni-1, 1:nj-1) + g%drovx(:,:)*(av%dt/av%dt_total)
 !     *************************      
 !     Setup the y-momentum equation including momentum flux and pressure forces
 !     INSERT
@@ -78,7 +78,7 @@
 !     INSERT
 !     *************************
       call sum_fluxes(av,flux_i,flux_j,g%area,g%rovy, g%drovy)
-      g%rovy = g%rovy_start + g%drovy
+      g%rovy(1:ni-1, 1:nj-1) = g%rovy_start(1:ni-1, 1:nj-1) + g%drovy(:,:)*(av%dt/av%dt_total)
 !     ************************* 
 !     Add artificial viscosity by smoothing all of the primary flow variables
       call smooth_array(av,g%ro)
