@@ -16,7 +16,10 @@
 !         Timestepping, smoothing and other run options
           real ::  cfl, sfac, dt, d_max, d_avg
           integer :: nsteps, nstep
-
+!     --------------------------------
+!         Timestepping for Runge-Kutta
+          real :: dt_total
+!     ---------------------------------
 !         Reference values of the primary flow variables
           real :: ro_ref, roe_ref, rov_ref
 
@@ -80,7 +83,10 @@
 
 !         Primary variables at nodes
           real, dimension(:,:), allocatable :: ro, roe, rovx, rovy
-
+!     ---------------------------------------------
+!         Primary variables at start nodes
+          real, dimension(:,:), allocatable :: ro_start, roe_start, rovx_start, rovy_start
+!     -----------------------------------------------
 !         Variables to hold cell increments
           real, dimension(:,:), allocatable :: dro, droe, drovx, drovy
 
