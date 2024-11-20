@@ -25,7 +25,7 @@
       integer :: nstep, nconv = 5, ncheck = 5
 
 !     --------------------------------------
-      integer :: nrkuts = 4
+      integer :: nrkuts = 4, nrkut
 !     When nrkuts = 1, the Lax Method is recovered.
 !     --------------------------------------
 
@@ -101,7 +101,6 @@
                   call apply_bconds(av,g,bcs)
                   call euler_iteration(av,g)
             end do
-      end do
 !     -------------------------------
 
 ! !     Start the time stepping do loop for "nsteps". This is now the heart of the
