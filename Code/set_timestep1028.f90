@@ -30,13 +30,14 @@
 !     Calculate the timestep using the CFL number and store it in "av%dt"
 !     INSERT
 !     ******************
-      av%dt = av%cfl*g%l_min/(v_max+astag)
+!     av%dt = av%cfl*g%l_min/(v_max+astag)
+      av%dt_total = av%cfl*g%l_min/(v_max+astag)
 !     ******************      
 !     Print the calculated timestep and some intermediate values
 !     INSERT
 !     *****************
 !      write(6,*) astag, av%dt, g%l_min
-      write(6,*) "Set timestep = ", av%dt, "      Stagnation Speed of sound = ", astag
+      write(6,*) "Set timestep = ", av%dt_total, "      Stagnation Speed of sound = ", astag
       write(6,*)
 !     *****************      
       end subroutine set_timestep
