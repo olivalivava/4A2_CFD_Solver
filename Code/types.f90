@@ -14,7 +14,7 @@
           real :: rgas, gam, cp, cv, fgam
 
 !         Timestepping, smoothing and other run options
-          real ::  cfl, sfac, dt, d_max, d_avg
+          real ::  cfl, sfac, dt, d_max, d_avg, fcorr
           integer :: nsteps, nstep
 !     --------------------------------
 !         Timestepping for Runge-Kutta
@@ -87,6 +87,9 @@
 !         Primary variables at start nodes
           real, dimension(:,:), allocatable :: ro_start, roe_start, rovx_start, rovy_start
 !     -----------------------------------------------
+!         Correction at nodes
+          real, dimension(:,:), allocatable :: corr_ro, corr_roe, corr_rovx, corr_rovy
+!     ---------------------------------------------
 !         Variables to hold cell increments
           real, dimension(:,:), allocatable :: dro, droe, drovx, drovy
 
