@@ -30,6 +30,7 @@ def main():
     # 2x4 nested list of residuals and names for legend
     fieldnames = [['dro_max', 'droe_max', 'drovx_max', 'drovy_max'],
         ['dro_avg', 'droe_avg', 'drovx_avg', 'drovy_avg']]
+        # ['corr_ro', 'corr_roe', 'corr_rovx', 'corr_rovy']
     colnames = ['dro', 'droe', 'drovx', 'drovy']
 
     # Plot the residuals changing with time
