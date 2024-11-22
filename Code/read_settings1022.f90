@@ -11,7 +11,7 @@
       type(t_bconds), intent(out) :: bcs
       character(len=80) :: tempname
 !     ***************
-      real :: gam, rgas, cfl, sfac, d_max, nsteps, ni, nj
+      real :: gam, rgas, cfl, sfac, d_max, nsteps, ni, nj, fcorr
       real :: pstag, tstag, alpha, rfin, R
       real :: p_out
       real :: rostag
@@ -29,7 +29,7 @@
 !     INSERT
 !     *************
       read(5,*) av%gam, av%rgas
-      read(5,*) av%cfl, av%sfac, av%d_max
+      read(5,*) av%cfl, av%sfac, av%d_max, av%fcorr
       read(5,*) av%nsteps
       read(5,*) av%ni, av%nj
 !     ***************
