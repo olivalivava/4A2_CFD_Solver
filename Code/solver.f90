@@ -9,6 +9,8 @@
 !     or "path_to_solver/solver.x < input_casename.txt > log_casename.txt &" to
 !     run in the background
 
+!     ~/4A2/4a2/Code/solver.x < input_bump.txt
+
 !     Use derived data types defined in a separate module
       use types
 
@@ -25,7 +27,7 @@
       integer :: nstep, nconv = 5, ncheck = 5
 
 !     --------------------------------------
-      integer :: nrkuts = 4, nrkut
+      integer :: nrkuts = 5, nrkut
 !     When nrkuts = 1, the Lax Method is recovered.
 !     --------------------------------------
 

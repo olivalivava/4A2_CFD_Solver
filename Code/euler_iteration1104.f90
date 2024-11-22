@@ -13,7 +13,7 @@
       type(t_grid), intent(inout) :: g
       real, dimension(g%ni,g%nj-1) :: mass_i, flux_i
       real, dimension(g%ni-1,g%nj) :: mass_j, flux_j
-      real, dimension(g%ni, g%nj) :: prop, dcell
+      real, dimension(g%ni, g%nj) :: prop, dnode
       integer :: i, j, ni, nj
 
 !     Get the block size and store locally for convenience
@@ -38,10 +38,10 @@
 !     Update the density with mass fluxes by calling "sum_fluxes"
 !     INSERT
 !     *************************
-!      call sum_fluxes(av,mass_i,mass_j,g%area, g%ro, g%dro)
-      prop = g%ro + (g%ro - g%ro_start)
-      call sum_fluxes(av,mass_i,mass_j,g%area, prop, g%dro)
-      g%ro = prop
+      prop = g%ro
+      call sum_fluxes(av,mass_i,mass_j,g%area, g%ro, g%dro)
+      g%ro = g%ro_start + (g%ro - prop)
+
 !     *************************      
 !     Setup the conservation of energy equation by calculated the enthalpy flux
 !     and storing the values in "flux_i" and "flux_j", you will need "mass_i"
@@ -54,9 +54,9 @@
 !     Update the internal energy with enthalpy fluxes
 !     INSERT
 !     **************************
-      prop = g%roe + (g%roe - g%roe_start)
-      call sum_fluxes(av,flux_i,flux_j,g%area,prop, g%droe)
-      g%roe = prop
+      prop = g%roe
+      call sum_fluxes(av,flux_i,flux_j,g%area, g%roe, g%droe)
+      g%roe = g%roe_start + (g%roe - prop)
 !     **************************      
 !     Setup the x-momentum equation including momentum flux and pressure forces
 !     INSERT
@@ -67,9 +67,9 @@
 !     Update the x-momentum with momentum flux
 !     INSERT
 !     *************************
-      prop = g%rovx + (g%rovx - g%rovx_start)
-      call sum_fluxes(av,flux_i,flux_j,g%area,prop, g%drovx)
-      g%rovx = prop
+      prop = g%rovx
+      call sum_fluxes(av,flux_i,flux_j,g%area,g%rovx, g%drovx)
+      g%rovx = g%rovx_start + (g%rovx - prop)
 !     *************************      
 !     Setup the y-momentum equation including momentum flux and pressure forces
 !     INSERT
@@ -80,15 +80,15 @@
 !     Update the y-momentum with momentum flux
 !     INSERT
 !     *************************
-      prop = g%rovy + (g%rovy - g%rovy_start)
-      call sum_fluxes(av,flux_i,flux_j,g%area,prop, g%drovy)
-      g%rovy = prop
+      prop = g%rovy
+      call sum_fluxes(av,flux_i,flux_j,g%area,g%rovy_start, g%drovy)
+      g%rovy = g%rovy_start + (g%rovy - prop)
 !     ************************* 
 !     Add artificial viscosity by smoothing all of the primary flow variables
-      call smooth_array(av,g%ro)
-      call smooth_array(av,g%roe)
-      call smooth_array(av,g%rovx)
-      call smooth_array(av,g%rovy)
+      call smooth_array(av,g%ro,g%corr_ro)
+      call smooth_array(av,g%roe,g%corr_roe)
+      call smooth_array(av,g%rovx,g%corr_rovx)
+      call smooth_array(av,g%rovy,g%corr_rovy)
       
 
       end subroutine euler_iteration
