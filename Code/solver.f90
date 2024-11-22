@@ -27,7 +27,7 @@
       integer :: nstep, nconv = 5, ncheck = 5
 
 !     --------------------------------------
-      integer :: nrkuts = 5, nrkut
+      integer :: nrkuts = 4, nrkut
 !     When nrkuts = 1, the Lax Method is recovered.
 !     --------------------------------------
 
@@ -94,6 +94,7 @@
 
 
 !     -------------------------------
+      g%corr_ro = 0.0; g%corr_roe = 0.0; g%corr_rovx = 0.0; g%corr_rovy = 0.0
       do nstep = 1, av%nsteps
             av%nstep = nstep
             g%ro_start = g%ro; g%roe_start = g%roe; g%rovx_start = g%rovx; g%rovy_start = g%rovy

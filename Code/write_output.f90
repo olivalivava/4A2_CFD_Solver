@@ -59,7 +59,7 @@
 !         Write cell increments, note these arrays are smaller than the node  
 !         data that has been written above
           write(7) g%dro; write(7) g%droe;           
-          write(7) g%drovx; write(7) g%drovy;           
+          write(7) g%drovx; write(7) g%drovy; 
 
       end if
 
