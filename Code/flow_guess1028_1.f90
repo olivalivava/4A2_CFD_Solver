@@ -204,5 +204,3 @@
       av%rov_ref = max(sum(g%rovx(1,:)),sum(g%rovy(1,:))) / (nj*1.0)
 
       end subroutine flow_guess
-
-
