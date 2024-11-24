@@ -574,7 +574,7 @@ def read_settings(filename):
     av['cv'] = av['cp'] / av['gam']
 
     # Read the CFL, smoothing factor and convergence limit
-    av['cfl'],av['sfac'],av['d_max'], av['fcorr']= [float(x) for x in f.readline().split()]
+    av['cfl'],av['sfac'],av['d_max'], av['fcorr'], av['smoothtype']= [float(x) for x in f.readline().split()]
 
     # Read the number of steps
     av['nsteps'] = [int(x) for x in f.readline().split()]
@@ -692,7 +692,7 @@ def default_settings(casename):
     av['rgas'] = 287; av['gam'] = 1.4
 
     # CFL, smoothing factor and convergence limit
-    av['cfl'] = 0.4; av['sfac'] = 0.5; av['d_max'] = 0.0001;
+    av['cfl'] = 0.4; av['sfac'] = 0.5; av['d_max'] = 0.0001; av['corr'] = 0.9; av['smoothtype'] = 1;
 
     # Number of steps
     av['nsteps'] = 5000; 
@@ -724,7 +724,7 @@ def write_settings(av):
     f.write('%f %f\n' % (av['gam'],av['rgas']))
 
     # Write the CFL, smoothing factor and convergence limit
-    f.write('%f %f %f\n' % (av['cfl'],av['sfac'],av['d_max']))
+    f.write('%f %f %f %f %d\n' % (av['cfl'],av['sfac'],av['d_max']), av['corr'], av['smoothtype'])
 
     # Write the number of steps
     f.write('%d\n' % (av['nsteps']))
