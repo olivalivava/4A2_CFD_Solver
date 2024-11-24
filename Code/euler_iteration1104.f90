@@ -14,7 +14,8 @@
       real, dimension(g%ni,g%nj-1) :: mass_i, flux_i
       real, dimension(g%ni-1,g%nj) :: mass_j, flux_j
       real, dimension(g%ni, g%nj) :: prop, dnode
-      integer :: i, j, ni, nj
+      integer :: i, j, ni, nj, smoothtype
+      smoothtype = av%smoothtype
 
 !     Get the block size and store locally for convenience
       ni = g%ni; nj = g%nj
@@ -85,11 +86,10 @@
       g%rovy = g%rovy_start + (g%rovy - prop)
 !     ************************* 
 !     Add artificial viscosity by smoothing all of the primary flow variables
-      call smooth_array(av,g%ro,g%corr_ro)
-      call smooth_array(av,g%roe,g%corr_roe)
-      call smooth_array(av,g%rovx,g%corr_rovx)
-      call smooth_array(av,g%rovy,g%corr_rovy)
-      
+      call smooth_array(av,g%ro,g%corr_ro, smoothtype)
+      call smooth_array(av,g%roe,g%corr_roe, smoothtype)
+      call smooth_array(av,g%rovx,g%corr_rovx, smoothtype)
+      call smooth_array(av,g%rovy,g%corr_rovy, smoothtype)
 
       end subroutine euler_iteration
 

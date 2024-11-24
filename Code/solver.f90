@@ -29,6 +29,9 @@
 !     --------------------------------------
       integer :: nrkuts = 4, nrkut
 !     When nrkuts = 1, the Lax Method is recovered.
+      integer :: smoothtype
+      smoothtype = av%smoothtype
+!     when smoothtype = 0, the basic solver recovered.
 !     --------------------------------------
 
 !     Read in the data on the run settings

@@ -14,7 +14,7 @@
           real :: rgas, gam, cp, cv, fgam
 
 !         Timestepping, smoothing and other run options
-          real ::  cfl, sfac, dt, d_max, d_avg, fcorr
+          real ::  cfl, sfac, dt, d_max, d_avg, fcorr, smoothtype
           integer :: nsteps, nstep
 !     --------------------------------
 !         Timestepping for Runge-Kutta
