@@ -27,7 +27,7 @@
       integer :: nstep, nconv = 5, ncheck = 5
 
 !     --------------------------------------
-      integer :: nrkuts = 4, nrkut
+      integer :: nrkuts = 1, nrkut
 !     When nrkuts = 1, the Lax Method is recovered.
       integer :: smoothtype
       smoothtype = av%smoothtype
