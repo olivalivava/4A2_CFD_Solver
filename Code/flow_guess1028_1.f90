@@ -107,9 +107,11 @@
 !         called "t_lim"
 !         INSERT
 !         ******************
-         mach_lim = 1.0
-         M_guess = min(M_guess, 0.9999*mach_lim)
-         t_lim = t0/(1+0.5*((gamma-1)*(mach_lim**2)))
+      !    mach_lim = 1.0
+      !    M_guess = min(M_guess, 0.9999*mach_lim)
+      !    t_lim = t0/(1+0.5*((gamma-1)*(mach_lim**2)))
+
+      !    REMOVED THE SUBSONIC FLOW ONLY LIMITATION
 
 !         ******************
 !         Now estimate the velocity and density at every "i = const" line, call 
@@ -125,32 +127,27 @@
         ! E_tot = cv*t_out + 0.5*((v_out)**2)
          do i=1, ni
             v_guess(i) = mass_out/(l_i(i)*ro_out)
-            
-           ! t_guess(i) = (E_tot - 0.5*(v_guess(i)**2))/cv
             t_guess(i) = bcs%tstag - (v_guess(i)**2)/(2.0*av%cp)
 
-            if (t_guess(i) < t_lim) then
-!              write(6,*) 'Detected Mach Number > 1, and applied the Mach Limit Successfully.'
-               t_guess(i) = t_lim
-               v_guess(i) = sqrt(av%gam* av%rgas*t_guess(i))
-            endif
+!             if (t_guess(i) < t_lim) then
+! !              write(6,*) 'Detected Mach Number > 1, and applied the Mach Limit Successfully.'
+!                t_guess(i) = t_lim
+!                v_guess(i) = sqrt(av%gam* av%rgas*t_guess(i))
+!             endif
             
             M_guess(i) = v_guess(i)/sqrt(av%gam* av%rgas*t_guess(i))
-            !p_guess(i) = bcs%pstag *((1+0.5*(av%gam-1)*(M_guess(i)**2))**(-av%gam/(av%gam-1)))
-            !ro_guess(i) = p_guess(i) / (R*t_guess(i))
             ro_guess(i) = bcs%rostag * ((t_guess(i)/bcs%tstag)**(1/(av%gam-1)))
-!            print *, t_guess(i), ro_guess(i)
             v_guess(i) = mass_out/(l_i(i)*ro_guess(i))
          end do
 
-         t_min = minval(t_guess, dim=1)
-         if (t_min < t_lim) then
-            write(6,*) 'M=' ,maxval(M_guess), 'at position i =', maxloc(M_guess)
-            write(6,*) "ERROR: Temperature exceeds the limit. Lower down the initial Mach number."
-            stop
-         else
-            write(6,*) "Checked the intial mach number."
-         end if
+      !    t_min = minval(t_guess, dim=1)
+      !    if (t_min < t_lim) then
+      !       write(6,*) 'M=' ,maxval(M_guess), 'at position i =', maxloc(M_guess)
+      !       write(6,*) "ERROR: Temperature exceeds the limit. Lower down the initial Mach number."
+      !       stop
+      !    else
+      !       write(6,*) "Checked the intial mach number."
+      !    end if
 !        [Notes] Stagnation Temperature constant, so total energy kept constant         
          
 !         *******************
