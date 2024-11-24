@@ -17,6 +17,7 @@
       
 !     Variables required for the crude guess
       real :: t_out, v_out, ro_out, lx, ly, l
+      real :: t_in, v_in, ro_in
 
 !     Variables required for the improved guess, you will need to add to these
       real :: l_i(g%ni)
@@ -34,44 +35,67 @@
 !     Store the values locally for convenience
       R = av%rgas; gamma = av%cp/av%cv
       cp = av%cp; cv = av%cv
-      p0 = bcs%pstag; t0 = bcs%tstag; p_out=bcs%p_out
+      p0 = bcs%pstag; t0 = bcs%tstag; p_out=bcs%p_out ; p_in=bcs%p_in
 
 !     Set tolerance for iteration:
       tol = 1.0e-4
 !     **************
 !     Assuming isentropic flow to the the exit plane calculate the static
 !     temperature and the exit velocity
-      t_out = bcs%tstag * (bcs%p_out / bcs%pstag)**av%fgam
-      v_out = (2 * av%cp * (bcs%tstag - t_out))**0.5
-      ro_out = bcs%p_out / (av%rgas * t_out)
+      write(6,*) av%casename
+      if (av%casename == 'waves') then
+            t_in = bcs%tstag * (bcs%p_in / bcs%pstag)**av%fgam
+            v_in = (2 * av%cp * (bcs%tstag - t_in))**0.5
+            ro_in = bcs%p_in / (av%rgas * t_in)
+            write(6,*) "Waves!!Heyy!!"
+      else 
+            t_out = bcs%tstag * (bcs%p_out / bcs%pstag)**av%fgam
+            v_out = (2 * av%cp * (bcs%tstag - t_out))**0.5
+            ro_out = bcs%p_out / (av%rgas * t_out)
+      end if
+
 
 !     Determine which guess calcation method to use by the value of "guesstype"
       if(guesstype == 1) then
+            if (av%casename == 'waves') then
+                  g%ro = ro_in
+                  g%roe  = g%ro * (av%cv * t_in + 0.5 * v_in**2)
 
+                  j_mid = nj / 2
+                  do i = 1,ni-1
+                  lx = g%lx_j(i,j_mid); ly = g%ly_j(i,j_mid); 
+                  l = hypot(lx,ly)
+                  g%rovx(i,:) = g%ro(i,:) * v_in * ly / l
+                  g%rovy(i,:) = -g%ro(i,:) * v_in * lx / l
+
+                  g%rovx(ni,:) = g%rovx(ni-1,:)
+                  g%rovy(ni,:) = g%rovy(ni-1,:)
+                  end do
+            else
 !         Store the exit density and internal energy as if they were uniform
 !         (upper two graphs have no change with displacement
-          g%ro = ro_out 
-          g%roe  = g%ro * (av%cv * t_out + 0.5 * v_out**2)
+                  g%ro = ro_out 
+                  g%roe  = g%ro * (av%cv * t_out + 0.5 * v_out**2)
 
 !         Calculate the gradient of the mesh lines in the centre of the domain
 !         to determine the assumed direction of the flow
-          j_mid = nj / 2
-          do i = 1,ni-1
-              lx = g%lx_j(i,j_mid); ly = g%ly_j(i,j_mid); 
-              l = hypot(lx,ly)
-              g%rovx(i,:) = g%ro(i,:) * v_out * ly / l
-              g%rovy(i,:) = -g%ro(i,:) * v_out * lx / l
-          end do
+                  j_mid = nj / 2
+                  do i = 1,ni-1
+                  lx = g%lx_j(i,j_mid); ly = g%ly_j(i,j_mid); 
+                  l = hypot(lx,ly)
+                  g%rovx(i,:) = g%ro(i,:) * v_out * ly / l
+                  g%rovy(i,:) = -g%ro(i,:) * v_out * lx / l
+                  end do
 
 !         Copy the values to the "i = ni" nodes as an approximation
-          g%rovx(ni,:) = g%rovx(ni-1,:)
-          g%rovy(ni,:) = g%rovy(ni-1,:)
-
+                  g%rovx(ni,:) = g%rovx(ni-1,:)
+                  g%rovy(ni,:) = g%rovy(ni-1,:)
+            end if
 !         Print the guess that has been calculated
-          write(6,*) 'Crude flow guess calculated'
-          write(6,*) '  At first point ro =', g%ro(1,1), 'roe =', &
+            write(6,*) 'Crude flow guess calculated'
+            write(6,*) '  At first point ro =', g%ro(1,1), 'roe =', &
                g%roe(1,1), 'rovx =', g%rovx(1,1), 'rovy =', g%rovy(1,1)
-          write(6,*)
+            write(6,*)
 
       else if(guesstype == 2) then 
 
@@ -96,8 +120,13 @@
 !         crude guess with "l_i" to estimate the mass flow rate at the exit
 !         INSERT
 !         ***************
-         M_out = v_out/ (sqrt(gamma *R *t_out))
-         mass_out = ro_out*l_i(nj-1)*v_out
+            if (av%casename == 'waves') then
+                  M_in = v_in / (sqrt(gamma *R *t_in))
+                  mass_in = ro_in*l_i(1)*v_in
+            else
+                  M_out = v_out/ (sqrt(gamma *R *t_out))
+                  mass_out = ro_out*l_i(nj-1)*v_out
+            end if
 !         write(6,*) "ro*A*V value = ", mass_out
          
 !         *************** 
@@ -106,7 +135,7 @@
 !         called "t_lim"
 !         INSERT
 !         ******************
-         mach_lim = 0.3
+         mach_lim = 1.0
          t_lim = t0/(1+0.5*((gamma-1)*(mach_lim**2)))
 
 !         ******************
@@ -120,6 +149,10 @@
 !             6. Update the estimate of the velocity "v_guess(i)" 
 !         INSERT
 !         *******************
+         if (av%casename == 'waves') then
+            write(6,*) 'heyyy'
+            t_out = t_in; ro_out = ro_in; p_out = p_in; v_out = v_in
+         end if
          E_tot = cv*t_out + 0.5*((v_out)**2)
          do i=1, ni-1
             v_guess(i) = mass_out/(l_i(i)*ro_out)

@@ -70,7 +70,6 @@
 !     INSERT
 !     **************
       read(5,*) bcs%p_out
-      
 !     **************
 
 !     Print the settings to check they have been read, you can use this syntax
@@ -84,7 +83,7 @@
       write(6,*) '  Convergence  d_max =', av%d_max
       write(6,*) '  Mesh size  ni =', av%ni, 'nj =', av%nj
       write(6,*) '  Inlet  pstag =', bcs%pstag, 'tstag =', bcs%tstag, &
-          'alpha = ', bcs%alpha
+          'alpha = ', bcs%alpha, 'p_in', bcs%p_in
       write(6,*) '  Outlet  p_out =', bcs%p_out
       write(6,*)
 
